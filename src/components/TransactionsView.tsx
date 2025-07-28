@@ -10,10 +10,12 @@ import {
 import { Schema } from '../../amplify/data/resource';
 
 type TransactionsViewProps = {
-  transactions: (Schema['Transaction']['type'] & {
-    category?: { name: string } | null;
-    account?: { name: string } | null;
-  })[];
+  transactions: Array<
+    Pick<Schema['Transaction']['type'], 'id' | 'date' | 'payee' | 'amount'| 'accountId'> & {
+      category?: { name: string } | null;
+      account?: { name: string } | null;
+    }
+  >;
   accounts: Schema['Account']['type'][];
 };
 
@@ -33,8 +35,8 @@ const TransactionsView = ({
   const sortedTransactions = [...filteredTransactions].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
-return (
-   
+
+  return (
     <Flex direction="column" gap={tokens.space.medium}>
       <Heading level={3}>Transactions</Heading>
       <SelectField

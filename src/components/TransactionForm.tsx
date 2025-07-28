@@ -107,13 +107,13 @@ const TransactionForm = ({
       }}
       onClick={onClose}
     >
-      <Card
+    <Card
         variation="elevated"
+        padding={tokens.space.large} // Changed from style prop to padding prop
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '90%',
           maxWidth: '500px',
-          padding: tokens.space.large,
         }}
       >
         <Flex direction="column" gap={tokens.space.medium}>
@@ -142,10 +142,8 @@ const TransactionForm = ({
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0.00"
             isRequired
-            style={{
-              color: isOutflow ? tokens.colors.red[80] : tokens.colors.green[80],
-              fontWeight: 'bold',
-            }}
+            color={isOutflow ? tokens.colors.red[80] : tokens.colors.green[80]}
+            style={{ fontWeight: 'bold' }}
           />
           <TextField
             label="Date"

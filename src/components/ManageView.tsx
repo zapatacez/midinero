@@ -16,7 +16,7 @@ import { Schema } from '../../amplify/data/resource';
 
 type ManageViewProps = {
   accounts: Schema['Account']['type'][];
-  transactions: Schema['Transaction']['type'][];
+  transactions: Array<Pick<Schema['Transaction']['type'], 'accountId' | 'amount'>>;
   categories: Schema['Category']['type'][];
   onCreateAccount: (name: string, balance: number) => void;
   onCreateCategory: (name: string) => void;
@@ -83,23 +83,29 @@ const ManageView = ({
           </TableBody>
         </Table>
         {accounts.length === 0 && <Text>No accounts yet. Add one to get started!</Text>}
-        <Flex marginTop={tokens.space.medium} gap={tokens.space.small}>
-          <TextField
-            placeholder="New Account Name"
-            value={newAccountName}
-            onChange={(e) => setNewAccountName(e.target.value)}
-          />
-          <TextField
-            placeholder="Starting Balance"
-            type="number"
-            value={newStartingBalance}
-            onChange={(e) => setNewStartingBalance(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleCreateAccount()}
-          />
-          <Button onClick={handleCreateAccount} variation="primary">
-            Add
-          </Button>
-        </Flex>
+        <form onSubmit={(e) => { e.preventDefault(); handleCreateAccount(); }}>
+          <Flex marginTop={tokens.space.medium} gap={tokens.space.small}>
+            <TextField
+              label="New Account Name"
+              labelHidden
+              placeholder="New Account Name"
+              value={newAccountName}
+              onChange={(e) => setNewAccountName(e.target.value)}
+              isRequired
+            />
+            <TextField
+              label="Starting Balance"
+              labelHidden
+              placeholder="Starting Balance"
+              type="number"
+              value={newStartingBalance}
+              onChange={(e) => setNewStartingBalance(e.target.value)}
+            />
+            <Button type="submit" variation="primary">
+              Add
+            </Button>
+          </Flex>
+        </form>
       </Card>
 
       {/* Category Management */}
@@ -109,15 +115,19 @@ const ManageView = ({
           <Text key={cat.id}>{cat.name}</Text>
         ))}
         {categories.length === 0 && <Text>No categories yet. Add some to build your budget.</Text>}
-        <Flex marginTop={tokens.space.medium} gap={tokens.space.small}>
-          <TextField
-            placeholder="New Category Name"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleCreateCategory()}
-          />
-          <Button onClick={handleCreateCategory}>Add</Button>
-        </Flex>
+        <form onSubmit={(e) => { e.preventDefault(); handleCreateCategory(); }}>
+          <Flex marginTop={tokens.space.medium} gap={tokens.space.small}>
+            <TextField
+              label="New Category Name"
+              labelHidden
+              placeholder="New Category Name"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              isRequired
+            />
+            <Button type="submit">Add</Button>
+          </Flex>
+        </form>
       </Card>
     </Flex>
   );

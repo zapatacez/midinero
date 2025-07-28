@@ -1,4 +1,3 @@
-import { useState, useEffect, useMemo } from 'react';
 import { useAuthenticator, View, Text, Heading, Card, Flex, Table, TableHead, TableRow, TableCell, TableBody, useTheme, Button } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import type { Schema } from "../amplify/data/resource";
@@ -6,6 +5,7 @@ import { generateClient } from "aws-amplify/data";
 import TransactionForm from './components/TransactionForm';
 import ManageView from './components/ManageView';
 import TransactionsView from './components/TransactionsView';
+import { useState, useEffect } from 'react';
 
 const client = generateClient<Schema>();
 
@@ -17,6 +17,22 @@ const mockCategories = [
   { id: '4', name: 'Internet', assigned: 60, available: 0 },
 ];
 
+// Custom type matching the selectionSet for transactions
+interface DisplayTransaction {
+  id: string;
+  date: string;
+  payee: string;
+  amount: number;
+  accountId: string;
+  categoryId: string | null;
+  account: {
+    name: string;
+  };
+  category: {
+    name: string;
+  } | null;
+}
+
 const BudgetView = () => {
   const { tokens } = useTheme();
   return (
@@ -24,13 +40,13 @@ const BudgetView = () => {
       {/* "Ready to Assign" Section */}
       <Card variation="elevated" style={{ textAlign: 'center', margin: `${tokens.space.large} 0` }}>
         <Text fontSize={tokens.fontSizes.large}>Ready to Assign</Text>
-        <Heading level={2} style={{ color: tokens.colors.green[60] }}>
+        <Heading level={2} color={tokens.colors.green[60]}>
           $1,234.56
         </Heading>
       </Card>
 
       {/* Budget Categories Section */}
-      <Heading level={3} style={{ marginBottom: tokens.space.small }}>Budget</Heading>
+      <Heading level={3} marginBottom={tokens.space.small}>Budget</Heading>
       <Table
         highlightOnHover
         variation="striped"
@@ -73,7 +89,7 @@ function App() {
   // We will use these state variables later to hold our data.
   const [accounts, setAccounts] = useState<Array<Schema["Account"]["type"]>>([]);
   const [categories, setCategories] = useState<Array<Schema["Category"]["type"]>>([]);
-  const [transactions, setTransactions] = useState<Array<Schema["Transaction"]["type"]>>([]);
+  const [transactions, setTransactions] = useState<DisplayTransaction[]>([]);
   // const [monthlyBudgets, setMonthlyBudgets] = useState<Array<Schema["MonthlyBudget"]["type"]>>([]);
   const [activeView, setActiveView] = useState('budget');
 
@@ -153,10 +169,23 @@ function App() {
 
   return (
     <View style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <View style={{ padding: tokens.space.medium, paddingBottom: '80px' /* Space for nav bar */ }}>
+      <View
+        padding={tokens.space.medium} // Use padding prop for token
+        style={{ paddingBottom: '80px' /* Space for nav bar */ }}
+      >
         <Flex direction="row" justifyContent="space-between" alignItems="center">
           <Heading level={1}>Mi Dinero</Heading>
-          <button onClick={signOut} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: tokens.colors.blue[60] }}>Sign out</button>
+          <button
+            onClick={signOut}
+            style={{
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              color: tokens.colors.blue[60].value, // Add .value
+            }}
+          >
+            Sign out
+          </button>
         </Flex>
 
         {activeView === 'budget' && <BudgetView />}
@@ -216,9 +245,9 @@ function App() {
           right: 0,
           maxWidth: '600px',
           margin: '0 auto',
-          borderTop: `1px solid ${tokens.colors.neutral[40]}`,
-          backgroundColor: tokens.colors.background.primary,
-          padding: `${tokens.space.small} 0`,
+          borderTop: `1px solid ${tokens.colors.neutral[40].value}`, // Add .value
+          backgroundColor: tokens.colors.background.primary.value, // Add .value
+          padding: `${tokens.space.small.value} 0`, // Add .value
         }}
       >
         <Button variation={activeView === 'budget' ? 'primary' : 'link'} onClick={() => setActiveView('budget')}>Budget</Button>
